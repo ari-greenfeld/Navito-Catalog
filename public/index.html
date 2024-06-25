@@ -3,9 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Navito Product Catalog</title>
     <!-- Bootstrap css -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <!-- Firebase Auth -->
@@ -20,13 +23,18 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         .header {
-            background-color: #ff5722;
+            background-color: #ee5a32;
             color: #fff;
             padding: 1em;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            top: 0;
         }
+
         .logo {
             background-color: #fff;
             border-radius: 8px;
@@ -34,10 +42,69 @@
             padding: 10px;
             height: 50px;
         }
+
         .header-title {
             flex-grow: 1;
-            text-align: center;
             margin: 0;
+            padding-left: 8px;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #ee5a32;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Section styles */
+        section {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 105px 20px 65px 20px;
+        }
+
+        section h4 {
+            color: #ee5a32;
+            padding-left: 15px;
+        }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive design adjustments */
+        @media (max-width: 768px) {
+            main {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
+        }
+
+        .card-body {
+            border-top: 1px solid rgba(0, 0, 0, .125);
+        }
+
+        .titleAndHeader {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-container {
+            color: #ee5a32;
+            padding-right: 15px;
         }
     </style>
 </head>
@@ -45,14 +112,74 @@
 <body>
     <div class="header">
         <img src="navito-logo.png" alt="Navito Logo" class="logo">
-        <h1 class="header-title">Product Catalog</h1>
-        <a href="admin.html" class="btn btn-light">Admin Login</a>
+        <h3 class="header-title">Navito</h3>
+        <a href="admin.html" class="btn btn-light"><i class="fas fa-sign-in-alt"></i> Admin Login</a>
     </div>
-    <div class="container mt-4">
-        <div class="row" id="productContainer">
-            <!-- Products will be inserted here -->
+    <main>
+        <section class="container">
+            <div class="titleAndHeader">
+                <h4>Supported Products</h4>
+                <div class="search-container">
+                    <div class="search-bar input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                    </div>
+                </div>
+            </div>
+            <div class="container mt-4">
+                <div class="row" id="productContainer">
+                    <!-- Products will be inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <div class="form-group">
+                            <label for="editProductImage">Product Image</label>
+                            <input type="file" class="form-control" id="editProductImage">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBrandName">Brand Name</label>
+                            <input type="text" class="form-control" id="editBrandName" placeholder="Brand Name"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editModelNumber">Model Number</label>
+                            <input type="text" class="form-control" id="editModelNumber" placeholder="Model Number"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPortNumber">Port Number</label>
+                            <input type="text" class="form-control" id="editPortNumber" placeholder="Port Number"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+
+
+    <footer>
+        <div>&copy; 2024 Navito Hub. All rights reserved.</div>
+    </footer>
     <!-- configure firebase -->
     <script src="firebaseConfig.js"></script>
     <!-- Your custom catalog script -->

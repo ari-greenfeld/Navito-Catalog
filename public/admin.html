@@ -3,9 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Admin Page</title>
     <!-- Bootstrap css -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <!-- Firebase Auth -->
@@ -14,19 +17,27 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
     <!-- Firebase Storage -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <!-- Firebase Functions -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-functions.js"></script>
     <!-- Bootstrap libraries -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         .header {
-            background-color: #ff5722;
+            background-color: #ee5a32;
             color: #fff;
             padding: 1em;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
         }
+
         .logo {
             background-color: #fff;
             border-radius: 8px;
@@ -34,10 +45,56 @@
             padding: 10px;
             height: 50px;
         }
+
         .header-title {
             flex-grow: 1;
-            text-align: center;
             margin: 0;
+            padding-left: 8px;
+            font-weight: bold;
+        }
+
+        /* Section styles */
+        section {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        section h4 {
+            color: #ee5a32;
+        }
+
+        #grant-admin-section {
+            margin-bottom: 65px;
+        }
+
+        .add-product-section {
+            margin-top: 105px;
+        }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        footer {
+            background-color: #ee5a32;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        /* Responsive design adjustments */
+        @media (max-width: 768px) {
+            main {
+                margin-left: 20px;
+                margin-right: 20px;
+            }
         }
     </style>
 </head>
@@ -45,38 +102,60 @@
 <body>
     <div class="header">
         <img src="navito-logo.png" alt="Navito Logo" class="logo">
-        <h1 class="header-title">Admin Page</h1>
-        <a href="index.html" class="btn btn-light">Home</a>
+        <h3 class="header-title">Admin Page</h3>
+        <a href="index.html" class="btn btn-light"><i class="fas fa-home"></i> Home</a>
     </div>
-    <div class="container mt-5">
-        <div id="authSection">
-            <h1 class="mb-4">Admin Login</h1>
-            <button id="googleLoginBtn" class="btn btn-danger">Login with Google</button>
-        </div>
-        <div id="adminSection" style="display: none;">
-            <h1 class="mb-4">Add New Product</h1>
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="productImage">Product Image</label>
-                    <input type="file" class="form-control" id="productImage" required>
+    <main>
+        <section class="add-product-section container">
+            <div class="container">
+                <div id="authSection">
+                    <h4>Admin Login</h4>
+                    <button id="googleLoginBtn" class="btn btn-danger"><i class="fab fa-google"></i> Login with
+                        Google</button>
                 </div>
-                <div class="form-group">
-                    <label for="brandName">Brand Name</label>
-                    <input type="text" class="form-control" id="brandName" placeholder="Brand Name" required>
+                <div id="adminSection" style="display: none;">
+                    <h4>Add New Product</h4>
+                    <form id="productForm">
+                        <div class="form-group">
+                            <label for="productImage">Product Image</label>
+                            <input type="file" class="form-control" id="productImage" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="brandName">Brand Name</label>
+                            <input type="text" class="form-control" id="brandName" placeholder="Brand Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modelNumber">Model Number</label>
+                            <input type="text" class="form-control" id="modelNumber" placeholder="Model Number"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="portNumber">Port Number</label>
+                            <input type="text" class="form-control" id="portNumber" placeholder="Port Number" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Product</button>
+                    </form>
+                    <button id="logoutBtn" class="btn btn-secondary mt-3"><i class="fas fa-sign-out-alt"></i>
+                        Logout</button>
                 </div>
-                <div class="form-group">
-                    <label for="modelNumber">Model Number</label>
-                    <input type="text" class="form-control" id="modelNumber" placeholder="Model Number" required>
-                </div>
-                <div class="form-group">
-                    <label for="portNumber">Port Number</label>
-                    <input type="text" class="form-control" id="portNumber" placeholder="Port Number" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
-            </form>
-            <button id="logoutBtn" class="btn btn-secondary mt-3">Logout</button>
-        </div>
-    </div>
+            </div>
+        </section>
+        <section id="grant-admin-section" class="container mt-3"  style="display: none;">
+            <div class="container">
+                <h4>Grant Admin Privileges</h4>
+                <form id="adminForm">
+                    <div class="form-group">
+                        <label for="adminEmail">Email address</label>
+                        <input type="email" class="form-control" id="adminEmail" placeholder="Enter email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Grant Admin</button>
+                </form>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div>&copy; 2024 Navito Hub. All rights reserved.</div>
+    </footer>
     <!-- configure firebase -->
     <script src="firebaseConfig.js"></script>
     <!-- admin.js -->

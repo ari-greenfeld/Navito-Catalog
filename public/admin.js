@@ -1,31 +1,33 @@
 const auth = firebase.auth();
 const db = firebase.firestore();
 const storage = firebase.storage();
+const functions = firebase.functions();
 
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 const productForm = document.getElementById('productForm');
 const authSection = document.getElementById('authSection');
 const adminSection = document.getElementById('adminSection');
+const grantAdminSection = document.getElementById('grant-admin-section');
 const logoutBtn = document.getElementById('logoutBtn');
+const adminForm = document.getElementById('adminForm');
 
 // Authentication state observer
 auth.onAuthStateChanged((user) => {
   if (user) {
-
-    authSection.style.display = 'none';
-    adminSection.style.display = 'block';
-    // user.getIdTokenResult().then((idTokenResult) => {
-    //     if (!!idTokenResult.claims.admin) {
-    //         authSection.style.display = 'none';
-    //         adminSection.style.display = 'block';
-    //     } else {
-    //         alert('You do not have permission to access this page.');
-    //         auth.signOut();
-    //     }
-    // });
+    user.getIdTokenResult().then((idTokenResult) => {
+      if (idTokenResult.claims.admin) {
+        authSection.style.display = 'none';
+        adminSection.style.display = 'block';
+        grantAdminSection.style.display = 'block';
+      } else {
+        showAlert('You do not have permission to access this page.', 'alert-danger');
+        auth.signOut();
+      }
+    });
   } else {
     authSection.style.display = 'block';
     adminSection.style.display = 'none';
+    grantAdminSection.style.display = 'none';
   }
 });
 
@@ -34,19 +36,19 @@ googleLoginBtn.addEventListener('click', () => {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then((result) => {
-      alert('Login successful');
+      showAlert('Login successful', 'alert-success');
     })
     .catch((error) => {
-      alert('Login failed: ' + error.message);
+      showAlert('Login failed: ' + error.message, 'alert-danger');
     });
 });
 
 // Logout button
 logoutBtn.addEventListener('click', () => {
   auth.signOut().then(() => {
-    alert('Logout successful');
+    showAlert('Logout successful', 'alert-success');
   }).catch((error) => {
-    alert('Logout failed: ' + error.message);
+    showAlert('Logout failed: ' + error.message, 'alert-danger');
   });
 });
 
@@ -70,5 +72,37 @@ productForm.addEventListener('submit', async (e) => {
     imageUrl
   });
 
-  alert('Product added successfully!');
+  showAlert('Product added successfully!', 'alert-success');
 });
+
+// Admin form submission
+adminForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const adminEmail = document.getElementById('adminEmail').value;
+  const addAdminRole = functions.httpsCallable('addAdminRole');
+  addAdminRole({ email: adminEmail }).then(result => {
+    showAlert(result.data.message, 'alert-success');
+  }).catch(error => {
+    showAlert('Failed to grant admin role: ' + error.message, 'alert-danger');
+  });
+});
+
+// Show success alert message
+function showAlert(message, alertClass) {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+  alertDiv.setAttribute('role', 'alert');
+  alertDiv.style.position = 'fixed';
+  alertDiv.style.bottom = '20px';
+  alertDiv.style.left = '50%';
+  alertDiv.style.transform = 'translateX(-50%)';
+  alertDiv.style.zIndex = '1050'; // Ensure alert is on top of other elements
+  alertDiv.innerHTML = `${message}`;
+  document.body.appendChild(alertDiv);
+
+  // Automatically remove alert after 3 seconds
+  setTimeout(() => {
+      alertDiv.remove();
+  }, 3000);
+}
